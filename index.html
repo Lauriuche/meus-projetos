@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meus Projetos — Lauriuche</title>
+    <meta name="theme-color" content="#0F172A">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #0F172A; }
+        
+        .repo-card {
+            transition: all 0.2s ease;
+        }
+        .repo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.4);
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, #1E293B 25%, #334155 50%, #1E293B 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .lang-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .btn-site {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+        }
+        .btn-site:hover {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur border-b border-slate-800">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
+                    <i class="fab fa-github text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Meus Projetos</h1>
+                    <p class="text-xs text-slate-400" id="userInfo">Carregando...</p>
+                </div>
+            </div>
+            <button onclick="loadRepos()" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 transition-colors" title="Atualizar">
+                <i class="fas fa-sync-alt" id="refreshIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="max-w-5xl mx-auto px-4 py-6">
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-3 mb-6" id="stats">
+            <div class="bg-slate-800/60 rounded-2xl p-4 text-center border border-slate-700/50">
+                <div class="text-2xl font-bold text-blue-400" id="statRepos">—</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Repositórios</div>
+            </div>
+            <div class="bg-slate-800/60 rounded-2xl p-4 text-center border border-slate-700/50">
+                <div class="text-2xl font-bold text-emerald-400" id="statPages">—</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Com Site</div>
+            </div>
+            <div class="bg-slate-800/60 rounded-2xl p-4 text-center border border-slate-700/50">
+                <div class="text-2xl font-bold text-amber-400" id="statStars">—</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Stars</div>
+            </div>
+        </div>
+
+        <!-- Filtro / Busca -->
+        <div class="mb-5">
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Buscar repositório..." 
+                    class="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 pl-11 pr-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    oninput="filterRepos()">
+            </div>
+        </div>
+
+        <!-- Filtros rápidos -->
+        <div class="flex gap-2 mb-5 overflow-x-auto pb-1">
+            <button onclick="setFilter('all')" class="filter-btn active flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-blue-600 text-white" data-filter="all">Todos</button>
+            <button onclick="setFilter('pages')" class="filter-btn flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700" data-filter="pages">Com Site</button>
+            <button onclick="setFilter('html')" class="filter-btn flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700" data-filter="html">HTML</button>
+            <button onclick="setFilter('js')" class="filter-btn flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700" data-filter="js">JavaScript</button>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="space-y-3">
+            <div class="skeleton h-24 rounded-2xl"></div>
+            <div class="skeleton h-24 rounded-2xl"></div>
+            <div class="skeleton h-24 rounded-2xl"></div>
+            <div class="skeleton h-24 rounded-2xl"></div>
+        </div>
+
+        <!-- Error -->
+        <div id="error" class="hidden text-center py-12">
+            <i class="fas fa-exclamation-triangle text-4xl text-amber-400 mb-3"></i>
+            <p class="text-slate-300 font-medium" id="errorMsg">Erro ao carregar</p>
+            <button onclick="loadRepos()" class="mt-4 px-5 py-2 bg-blue-600 rounded-xl text-sm font-semibold">Tentar novamente</button>
+        </div>
+
+        <!-- Lista de Repos -->
+        <div id="repoList" class="space-y-3 hidden"></div>
+
+        <!-- Empty -->
+        <div id="empty" class="hidden text-center py-12">
+            <i class="fas fa-folder-open text-4xl text-slate-600 mb-3"></i>
+            <p class="text-slate-400">Nenhum repositório encontrado</p>
+        </div>
+    </main>
+
+    <footer class="text-center text-xs text-slate-600 py-8">
+        Conectado via GitHub API • Lauriuche
+    </footer>
+
+    <script>
+        const USERNAME = 'Lauriuche';
+        let allRepos = [];
+        let currentFilter = 'all';
+
+        const LANG_COLORS = {
+            'HTML': '#e34c26',
+            'JavaScript': '#f1e05a',
+            'TypeScript': '#3178c6',
+            'CSS': '#563d7c',
+            'Python': '#3572A5',
+            'Java': '#b07219',
+            'PHP': '#4F5D95',
+            'Shell': '#89e051',
+            'default': '#8b949e'
+        };
+
+        async function loadRepos() {
+            const icon = document.getElementById('refreshIcon');
+            icon.classList.add('fa-spin');
+            
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('repoList').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('empty').classList.add('hidden');
+
+            try {
+                // Busca repositórios (máx 100)
+                const res = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&sort=updated`);
+                
+                if (!res.ok) {
+                    if (res.status === 403) throw new Error('Limite da API atingido. Aguarde alguns minutos.');
+                    throw new Error(`Erro ${res.status}: ${res.statusText}`);
+                }
+
+                allRepos = await res.json();
+                
+                // Ordena por atualização mais recente
+                allRepos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+                // Stats
+                document.getElementById('statRepos').innerText = allRepos.length;
+                document.getElementById('statPages').innerText = allRepos.filter(r => r.has_pages || r.homepage).length;
+                document.getElementById('statStars').innerText = allRepos.reduce((s, r) => s + r.stargazers_count, 0);
+                document.getElementById('userInfo').innerText = `@${USERNAME} • ${allRepos.length} repos`;
+
+                renderRepos();
+                
+            } catch (err) {
+                document.getElementById('error').classList.remove('hidden');
+                document.getElementById('errorMsg').innerText = err.message || 'Falha ao conectar com o GitHub';
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+                icon.classList.remove('fa-spin');
+            }
+        }
+
+        function getSiteUrl(repo) {
+            // Prioridade: homepage customizada > GitHub Pages
+            if (repo.homepage && repo.homepage.startsWith('http')) {
+                return repo.homepage;
+            }
+            if (repo.has_pages) {
+                return `https://${USERNAME.toLowerCase()}.github.io/${repo.name}/`;
+            }
+            return null;
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            const now = new Date();
+            const diff = (now - d) / 1000;
+            
+            if (diff < 3600) return 'Há poucos minutos';
+            if (diff < 86400) return `Há ${Math.floor(diff/3600)}h`;
+            if (diff < 604800) return `Há ${Math.floor(diff/86400)} dias`;
+            
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function renderRepos() {
+            const list = document.getElementById('repoList');
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            let filtered = allRepos.filter(repo => {
+                // Filtro de busca
+                if (search && !repo.name.toLowerCase().includes(search) && 
+                    !(repo.description || '').toLowerCase().includes(search)) {
+                    return false;
+                }
+                
+                // Filtros de categoria
+                if (currentFilter === 'pages') return repo.has_pages || repo.homepage;
+                if (currentFilter === 'html') return repo.language === 'HTML';
+                if (currentFilter === 'js') return repo.language === 'JavaScript';
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                list.classList.add('hidden');
+                document.getElementById('empty').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('empty').classList.add('hidden');
+            list.classList.remove('hidden');
+
+            list.innerHTML = filtered.map(repo => {
+                const siteUrl = getSiteUrl(repo);
+                const langColor = LANG_COLORS[repo.language] || LANG_COLORS.default;
+                const hasSite = !!siteUrl;
+
+                return `
+                <div class="repo-card bg-slate-800/70 border border-slate-700/60 rounded-2xl p-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h3 class="font-semibold text-slate-100 truncate">${repo.name}</h3>
+                                ${repo.private ? '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-medium">Privado</span>' : ''}
+                            </div>
+                            
+                            ${repo.description ? `<p class="text-xs text-slate-400 line-clamp-2 mb-2">${repo.description}</p>` : '<p class="text-xs text-slate-600 mb-2 italic">Sem descrição</p>'}
+                            
+                            <div class="flex items-center gap-3 text-[11px] text-slate-500">
+                                ${repo.language ? `
+                                    <span class="flex items-center gap-1.5">
+                                        <span class="lang-dot" style="background:${langColor}"></span>
+                                        ${repo.language}
+                                    </span>
+                                ` : ''}
+                                <span><i class="far fa-clock mr-1"></i>${formatDate(repo.updated_at)}</span>
+                                ${repo.stargazers_count > 0 ? `<span><i class="fas fa-star text-amber-400/80 mr-1"></i>${repo.stargazers_count}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botões de ação -->
+                    <div class="flex gap-2 mt-3.5">
+                        ${hasSite ? `
+                            <a href="${siteUrl}" target="_blank" rel="noopener"
+                               class="btn-site flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white shadow-lg shadow-blue-600/20 active:scale-[0.98] transition-transform">
+                                <i class="fas fa-external-link-alt text-xs"></i>
+                                Abrir Site
+                            </a>
+                        ` : `
+                            <div class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-slate-500 bg-slate-900/50 border border-slate-700/50">
+                                <i class="fas fa-globe text-xs opacity-50"></i>
+                                Sem site
+                            </div>
+                        `}
+                        
+                        <a href="${repo.html_url}" target="_blank" rel="noopener"
+                           class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-slate-700/60 hover:bg-slate-700 border border-slate-600/50 active:scale-[0.98] transition-all">
+                            <i class="fab fa-github"></i>
+                            Código
+                        </a>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function filterRepos() {
+            renderRepos();
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.className = 'filter-btn active flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-blue-600 text-white';
+                } else {
+                    btn.className = 'filter-btn flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700';
+                }
+            });
+            
+            renderRepos();
+        }
+
+        // Inicia
+        loadRepos();
+    </script>
+</body>
+</html>
