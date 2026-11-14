@@ -4,130 +4,238 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meus Projetos — Lauriuche</title>
-    <meta name="theme-color" content="#0F172A">
+    <meta name="theme-color" content="#020617">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #0F172A; }
+        :root {
+            --bg: #020617;
+            --card: rgba(15, 23, 42, 0.7);
+            --border: rgba(51, 65, 85, 0.5);
+            --accent: #3B82F6;
+        }
         
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            background-image: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 100% 0%, rgba(139, 92, 246, 0.08), transparent);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .glass {
+            background: var(--card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+        }
+
         .repo-card {
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .repo-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(59,130,246,0.05), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
         .repo-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.4);
+            transform: translateY(-3px);
+            border-color: rgba(59, 130, 246, 0.35);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(59, 130, 246, 0.1);
         }
-        
+        .repo-card:hover::before {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%);
+            box-shadow: 0 4px 14px -3px rgba(59, 130, 246, 0.5);
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px -3px rgba(59, 130, 246, 0.6);
+            filter: brightness(1.08);
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-ghost {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            transition: all 0.2s;
+        }
+        .btn-ghost:hover {
+            background: rgba(51, 65, 85, 0.8);
+            border-color: rgba(100, 116, 139, 0.6);
+        }
+
         .skeleton {
-            background: linear-gradient(90deg, #1E293B 25%, #334155 50%, #1E293B 75%);
+            background: linear-gradient(90deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
             background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+            animation: shimmer 1.6s ease-in-out infinite;
+            border-radius: 16px;
         }
         @keyframes shimmer {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
-        
+
+        .filter-pill {
+            transition: all 0.2s;
+        }
+        .filter-pill.active {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.4);
+        }
+
         .lang-dot {
-            width: 10px;
-            height: 10px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
             display: inline-block;
+            box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.8);
         }
-        
-        .btn-site {
-            background: linear-gradient(135deg, #3B82F6, #2563EB);
+
+        .header-blur {
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
-        .btn-site:hover {
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up {
+            animation: fadeUp 0.4s ease-out forwards;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen">
+<body>
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur border-b border-slate-800">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+    <header class="header-blur sticky top-0 z-50 border-b border-slate-800/80">
+        <div class="max-w-3xl mx-auto px-4 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
-                    <i class="fab fa-github text-white text-lg"></i>
+                <div class="relative">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                        <i class="fab fa-github text-white text-xl"></i>
+                    </div>
+                    <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-slate-950"></div>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight">Meus Projetos</h1>
-                    <p class="text-xs text-slate-400" id="userInfo">Carregando...</p>
+                    <h1 class="font-bold text-[17px] tracking-tight text-white leading-none">Meus Projetos</h1>
+                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium" id="userInfo">Conectando...</p>
                 </div>
             </div>
-            <button onclick="loadRepos()" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 transition-colors" title="Atualizar">
-                <i class="fas fa-sync-alt" id="refreshIcon"></i>
+            <button onclick="loadRepos()" class="w-10 h-10 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 flex items-center justify-center text-slate-300 hover:text-white transition-all active:scale-95" title="Atualizar lista">
+                <i class="fas fa-sync-alt text-sm" id="refreshIcon"></i>
             </button>
         </div>
     </header>
 
-    <!-- Main -->
-    <main class="max-w-5xl mx-auto px-4 py-6">
-        
-        <!-- Stats -->
-        <div class="grid grid-cols-3 gap-3 mb-6" id="stats">
-            <div class="bg-slate-800/60 rounded-2xl p-4 text-center border border-slate-700/50">
-                <div class="text-2xl font-bold text-blue-400" id="statRepos">—</div>
-                <div class="text-[11px] text-slate-400 mt-0.5">Repositórios</div>
+    <main class="max-w-3xl mx-auto px-4 py-5 pb-16">
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-3 gap-2.5 mb-5" id="statsRow">
+            <div class="glass rounded-2xl p-3.5 text-center">
+                <div class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-300" id="statRepos">—</div>
+                <div class="text-[10px] text-slate-400 font-medium mt-0.5 tracking-wide uppercase">Repos</div>
             </div>
-            <div class="bg-slate-800/60 rounded-2xl p-4 text-center border border-slate-700/50">
-                <div class="text-2xl font-bold text-emerald-400" id="statPages">—</div>
-                <div class="text-[11px] text-slate-400 mt-0.5">Com Site</div>
+            <div class="glass rounded-2xl p-3.5 text-center">
+                <div class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300" id="statPages">—</div>
+                <div class="text-[10px] text-slate-400 font-medium mt-0.5 tracking-wide uppercase">Com Site</div>
             </div>
-            <div class="bg-slate-800/60 rounded-2xl p-4 text-center border border-slate-700/50">
-                <div class="text-2xl font-bold text-amber-400" id="statStars">—</div>
-                <div class="text-[11px] text-slate-400 mt-0.5">Stars</div>
+            <div class="glass rounded-2xl p-3.5 text-center">
+                <div class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300" id="statStars">—</div>
+                <div class="text-[10px] text-slate-400 font-medium mt-0.5 tracking-wide uppercase">Stars</div>
             </div>
         </div>
 
-        <!-- Filtro / Busca -->
-        <div class="mb-5">
-            <div class="relative">
-                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-                <input type="text" id="searchInput" placeholder="Buscar repositório..." 
-                    class="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 pl-11 pr-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                    oninput="filterRepos()">
-            </div>
+        <!-- Search -->
+        <div class="relative mb-4">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+            <input type="text" id="searchInput" placeholder="Buscar projeto..." 
+                class="w-full glass rounded-2xl py-3.5 pl-11 pr-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all"
+                oninput="filterRepos()">
         </div>
 
-        <!-- Filtros rápidos -->
-        <div class="flex gap-2 mb-5 overflow-x-auto pb-1">
-            <button onclick="setFilter('all')" class="filter-btn active flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-blue-600 text-white" data-filter="all">Todos</button>
-            <button onclick="setFilter('pages')" class="filter-btn flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700" data-filter="pages">Com Site</button>
-            <button onclick="setFilter('html')" class="filter-btn flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700" data-filter="html">HTML</button>
-            <button onclick="setFilter('js')" class="filter-btn flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700" data-filter="js">JavaScript</button>
+        <!-- Filters -->
+        <div class="flex gap-2 mb-5 overflow-x-auto pb-1 -mx-1 px-1">
+            <button onclick="setFilter('all')" class="filter-pill active flex-shrink-0 px-4 py-1.5 text-xs font-semibold rounded-full border border-transparent" data-filter="all">Todos</button>
+            <button onclick="setFilter('pages')" class="filter-pill flex-shrink-0 px-4 py-1.5 text-xs font-semibold rounded-full bg-slate-800/60 text-slate-300 border border-slate-700/60" data-filter="pages">
+                <i class="fas fa-globe text-[10px] mr-1 opacity-70"></i> Com Site
+            </button>
+            <button onclick="setFilter('html')" class="filter-pill flex-shrink-0 px-4 py-1.5 text-xs font-semibold rounded-full bg-slate-800/60 text-slate-300 border border-slate-700/60" data-filter="html">HTML</button>
+            <button onclick="setFilter('js')" class="filter-pill flex-shrink-0 px-4 py-1.5 text-xs font-semibold rounded-full bg-slate-800/60 text-slate-300 border border-slate-700/60" data-filter="js">JavaScript</button>
         </div>
 
         <!-- Loading -->
         <div id="loading" class="space-y-3">
-            <div class="skeleton h-24 rounded-2xl"></div>
-            <div class="skeleton h-24 rounded-2xl"></div>
-            <div class="skeleton h-24 rounded-2xl"></div>
-            <div class="skeleton h-24 rounded-2xl"></div>
+            <div class="skeleton h-28"></div>
+            <div class="skeleton h-28"></div>
+            <div class="skeleton h-28"></div>
+            <div class="skeleton h-28"></div>
         </div>
 
         <!-- Error -->
-        <div id="error" class="hidden text-center py-12">
-            <i class="fas fa-exclamation-triangle text-4xl text-amber-400 mb-3"></i>
-            <p class="text-slate-300 font-medium" id="errorMsg">Erro ao carregar</p>
-            <button onclick="loadRepos()" class="mt-4 px-5 py-2 bg-blue-600 rounded-xl text-sm font-semibold">Tentar novamente</button>
+        <div id="error" class="hidden text-center py-16">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-500/10 flex items-center justify-center">
+                <i class="fas fa-exclamation-triangle text-2xl text-amber-400"></i>
+            </div>
+            <p class="text-slate-200 font-semibold mb-1" id="errorMsg">Erro ao carregar</p>
+            <p class="text-sm text-slate-500 mb-5">Verifique sua conexão</p>
+            <button onclick="loadRepos()" class="btn-primary px-6 py-2.5 rounded-xl text-sm font-semibold text-white">
+                Tentar novamente
+            </button>
         </div>
 
-        <!-- Lista de Repos -->
+        <!-- Repo List -->
         <div id="repoList" class="space-y-3 hidden"></div>
 
         <!-- Empty -->
-        <div id="empty" class="hidden text-center py-12">
-            <i class="fas fa-folder-open text-4xl text-slate-600 mb-3"></i>
-            <p class="text-slate-400">Nenhum repositório encontrado</p>
+        <div id="empty" class="hidden text-center py-16">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-800 flex items-center justify-center">
+                <i class="fas fa-folder-open text-2xl text-slate-500"></i>
+            </div>
+            <p class="text-slate-300 font-medium">Nenhum projeto encontrado</p>
+            <p class="text-sm text-slate-500 mt-1">Tente outro filtro ou busca</p>
         </div>
     </main>
 
-    <footer class="text-center text-xs text-slate-600 py-8">
-        Conectado via GitHub API • Lauriuche
+    <footer class="text-center text-[11px] text-slate-600 pb-8">
+        <span class="inline-flex items-center gap-1.5">
+            <i class="fab fa-github"></i>
+            GitHub API • <span class="text-slate-500">Lauriuche</span>
+        </span>
     </footer>
 
     <script>
@@ -144,7 +252,7 @@
             'Java': '#b07219',
             'PHP': '#4F5D95',
             'Shell': '#89e051',
-            'default': '#8b949e'
+            'default': '#64748b'
         };
 
         async function loadRepos() {
@@ -157,30 +265,26 @@
             document.getElementById('empty').classList.add('hidden');
 
             try {
-                // Busca repositórios (máx 100)
                 const res = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&sort=updated`);
                 
                 if (!res.ok) {
-                    if (res.status === 403) throw new Error('Limite da API atingido. Aguarde alguns minutos.');
-                    throw new Error(`Erro ${res.status}: ${res.statusText}`);
+                    if (res.status === 403) throw new Error('Limite da API atingido. Aguarde um pouco.');
+                    throw new Error(`Erro ${res.status}`);
                 }
 
                 allRepos = await res.json();
-                
-                // Ordena por atualização mais recente
                 allRepos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
-                // Stats
                 document.getElementById('statRepos').innerText = allRepos.length;
-                document.getElementById('statPages').innerText = allRepos.filter(r => r.has_pages || r.homepage).length;
+                document.getElementById('statPages').innerText = allRepos.filter(r => r.has_pages || (r.homepage && r.homepage.startsWith('http'))).length;
                 document.getElementById('statStars').innerText = allRepos.reduce((s, r) => s + r.stargazers_count, 0);
-                document.getElementById('userInfo').innerText = `@${USERNAME} • ${allRepos.length} repos`;
+                document.getElementById('userInfo').innerText = `@${USERNAME} · ${allRepos.length} projetos`;
 
                 renderRepos();
                 
             } catch (err) {
                 document.getElementById('error').classList.remove('hidden');
-                document.getElementById('errorMsg').innerText = err.message || 'Falha ao conectar com o GitHub';
+                document.getElementById('errorMsg').innerText = err.message || 'Falha ao conectar';
             } finally {
                 document.getElementById('loading').classList.add('hidden');
                 icon.classList.remove('fa-spin');
@@ -188,13 +292,8 @@
         }
 
         function getSiteUrl(repo) {
-            // Prioridade: homepage customizada > GitHub Pages
-            if (repo.homepage && repo.homepage.startsWith('http')) {
-                return repo.homepage;
-            }
-            if (repo.has_pages) {
-                return `https://${USERNAME.toLowerCase()}.github.io/${repo.name}/`;
-            }
+            if (repo.homepage && repo.homepage.startsWith('http')) return repo.homepage;
+            if (repo.has_pages) return `https://${USERNAME.toLowerCase()}.github.io/${repo.name}/`;
             return null;
         }
 
@@ -203,11 +302,12 @@
             const now = new Date();
             const diff = (now - d) / 1000;
             
-            if (diff < 3600) return 'Há poucos minutos';
+            if (diff < 3600) return 'Agora há pouco';
             if (diff < 86400) return `Há ${Math.floor(diff/3600)}h`;
-            if (diff < 604800) return `Há ${Math.floor(diff/86400)} dias`;
+            if (diff < 604800) return `Há ${Math.floor(diff/86400)}d`;
+            if (diff < 2592000) return `Há ${Math.floor(diff/604800)} sem`;
             
-            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
         }
 
         function renderRepos() {
@@ -215,14 +315,10 @@
             const search = document.getElementById('searchInput').value.toLowerCase().trim();
             
             let filtered = allRepos.filter(repo => {
-                // Filtro de busca
                 if (search && !repo.name.toLowerCase().includes(search) && 
-                    !(repo.description || '').toLowerCase().includes(search)) {
-                    return false;
-                }
+                    !(repo.description || '').toLowerCase().includes(search)) return false;
                 
-                // Filtros de categoria
-                if (currentFilter === 'pages') return repo.has_pages || repo.homepage;
+                if (currentFilter === 'pages') return repo.has_pages || (repo.homepage && repo.homepage.startsWith('http'));
                 if (currentFilter === 'html') return repo.language === 'HTML';
                 if (currentFilter === 'js') return repo.language === 'JavaScript';
                 return true;
@@ -237,57 +333,71 @@
             document.getElementById('empty').classList.add('hidden');
             list.classList.remove('hidden');
 
-            list.innerHTML = filtered.map(repo => {
+            list.innerHTML = filtered.map((repo, i) => {
                 const siteUrl = getSiteUrl(repo);
                 const langColor = LANG_COLORS[repo.language] || LANG_COLORS.default;
                 const hasSite = !!siteUrl;
+                const delay = Math.min(i * 40, 300);
 
                 return `
-                <div class="repo-card bg-slate-800/70 border border-slate-700/60 rounded-2xl p-4">
-                    <div class="flex items-start justify-between gap-3">
+                <article class="repo-card glass rounded-2xl p-4 fade-up" style="animation-delay: ${delay}ms">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-slate-300 border border-slate-600/40">
+                            <i class="fas fa-${hasSite ? 'globe' : 'code'} text-sm"></i>
+                        </div>
+                        
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 mb-1">
-                                <h3 class="font-semibold text-slate-100 truncate">${repo.name}</h3>
-                                ${repo.private ? '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-medium">Privado</span>' : ''}
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <h3 class="font-semibold text-[15px] text-white truncate">${repo.name}</h3>
+                                ${repo.private ? '<span class="text-[9px] bg-amber-500/15 text-amber-400 px-1.5 py-0.5 rounded-md font-semibold tracking-wide">PRIV</span>' : ''}
                             </div>
                             
-                            ${repo.description ? `<p class="text-xs text-slate-400 line-clamp-2 mb-2">${repo.description}</p>` : '<p class="text-xs text-slate-600 mb-2 italic">Sem descrição</p>'}
+                            <p class="text-[12px] text-slate-400 line-clamp-2 leading-relaxed mb-2.5">
+                                ${repo.description || '<span class="italic text-slate-600">Sem descrição</span>'}
+                            </p>
                             
                             <div class="flex items-center gap-3 text-[11px] text-slate-500">
                                 ${repo.language ? `
-                                    <span class="flex items-center gap-1.5">
+                                    <span class="flex items-center gap-1.5 font-medium">
                                         <span class="lang-dot" style="background:${langColor}"></span>
                                         ${repo.language}
                                     </span>
                                 ` : ''}
-                                <span><i class="far fa-clock mr-1"></i>${formatDate(repo.updated_at)}</span>
-                                ${repo.stargazers_count > 0 ? `<span><i class="fas fa-star text-amber-400/80 mr-1"></i>${repo.stargazers_count}</span>` : ''}
+                                <span class="flex items-center gap-1">
+                                    <i class="far fa-clock text-[10px] opacity-70"></i>
+                                    ${formatDate(repo.updated_at)}
+                                </span>
+                                ${repo.stargazers_count > 0 ? `
+                                    <span class="flex items-center gap-1 text-amber-400/90">
+                                        <i class="fas fa-star text-[10px]"></i>
+                                        ${repo.stargazers_count}
+                                    </span>
+                                ` : ''}
                             </div>
                         </div>
                     </div>
 
-                    <!-- Botões de ação -->
                     <div class="flex gap-2 mt-3.5">
                         ${hasSite ? `
                             <a href="${siteUrl}" target="_blank" rel="noopener"
-                               class="btn-site flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white shadow-lg shadow-blue-600/20 active:scale-[0.98] transition-transform">
-                                <i class="fas fa-external-link-alt text-xs"></i>
+                               class="btn-primary flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-semibold text-white">
+                                <i class="fas fa-external-link-alt text-[11px]"></i>
                                 Abrir Site
                             </a>
                         ` : `
-                            <div class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-slate-500 bg-slate-900/50 border border-slate-700/50">
-                                <i class="fas fa-globe text-xs opacity-50"></i>
+                            <div class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-medium text-slate-500 bg-slate-900/40 border border-slate-800">
+                                <i class="fas fa-ban text-[11px] opacity-50"></i>
                                 Sem site
                             </div>
                         `}
                         
                         <a href="${repo.html_url}" target="_blank" rel="noopener"
-                           class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 bg-slate-700/60 hover:bg-slate-700 border border-slate-600/50 active:scale-[0.98] transition-all">
+                           class="btn-ghost flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium text-slate-300">
                             <i class="fab fa-github"></i>
                             Código
                         </a>
                     </div>
-                </div>
+                </article>
                 `;
             }).join('');
         }
@@ -299,18 +409,24 @@
         function setFilter(filter) {
             currentFilter = filter;
             
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.dataset.filter === filter) {
-                    btn.className = 'filter-btn active flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-blue-600 text-white';
+            document.querySelectorAll('.filter-pill').forEach(btn => {
+                const isActive = btn.dataset.filter === filter;
+                if (isActive) {
+                    btn.className = 'filter-pill active flex-shrink-0 px-4 py-1.5 text-xs font-semibold rounded-full border border-transparent';
+                    if (filter === 'pages') btn.innerHTML = '<i class="fas fa-globe text-[10px] mr-1"></i> Com Site';
+                    else btn.innerText = btn.dataset.filter === 'all' ? 'Todos' : btn.dataset.filter === 'html' ? 'HTML' : 'JavaScript';
                 } else {
-                    btn.className = 'filter-btn flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700';
+                    btn.className = 'filter-pill flex-shrink-0 px-4 py-1.5 text-xs font-semibold rounded-full bg-slate-800/60 text-slate-300 border border-slate-700/60';
+                    if (btn.dataset.filter === 'pages') btn.innerHTML = '<i class="fas fa-globe text-[10px] mr-1 opacity-70"></i> Com Site';
+                    else if (btn.dataset.filter === 'all') btn.innerText = 'Todos';
+                    else if (btn.dataset.filter === 'html') btn.innerText = 'HTML';
+                    else btn.innerText = 'JavaScript';
                 }
             });
             
             renderRepos();
         }
 
-        // Inicia
         loadRepos();
     </script>
 </body>
